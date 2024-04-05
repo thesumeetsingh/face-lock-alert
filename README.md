@@ -17,7 +17,7 @@ Alert Mechanisms: Utilize Twilio for SMS notifications, SMTP for email alerts, a
 Security Measures: Implement robust security practices including password hashing, data encryption, and secure transmission protocols.
 
 Clone the repository:
-git clone https://github.com/yourusername/Face-Lock-Alert.git
+git clone https://github.com/thesumeetsingh/face-lock-alert.git
 
 Usage
 Run the main Python script to start the application:
