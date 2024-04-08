@@ -1,4 +1,4 @@
-twilio_accountSID='AC272ab891bb11e4add831e2d6601a0dff'
-twilio_authToken='83d9c51f70d848549547f4bfadc7e4ec'
-twilio_number='+12132931371'
-destination_number='+917489029392'
+twilio_accountSID='Add your twilio account ID here'
+twilio_authToken='add twilio auth token'
+twilio_number='add allocated twilio number'
+destination_number='add destination phone number'
