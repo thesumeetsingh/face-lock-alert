@@ -1,0 +1,14 @@
+Install the following python packages
+
+pip install twilio
+pip install opencv-python
+pip install geocoder
+pip install secure-smtplib
+pip install numpy
+
+Already builtin modules in python that are used in this project are:
+os
+datetime
+getpass
+re (Regular Expressions)
+subprocess
