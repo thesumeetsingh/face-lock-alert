@@ -44,3 +44,19 @@ Twilio - For SMS notifications.
 OpenCV - For facial recognition.
 NumPy - For numerical computation
 
+DATA FLOW STRUCTURE:
+![image](https://github.com/thesumeetsingh/face-lock-alert/assets/148633096/ff0f0b3e-7ae7-4bb6-8ee2-b49b720875d0)
+
+
+SIGNUP
+![image](https://github.com/thesumeetsingh/face-lock-alert/assets/148633096/3dc3d5d1-9954-4132-92bc-c08cd283f4fa)
+
+BREACH DETECTION ON LOGIN
+![image](https://github.com/thesumeetsingh/face-lock-alert/assets/148633096/957a62b1-391f-40f1-8e9a-33c9b77e3198)
+
+RECIEVED EMAIL OF THREAT PERSON
+![image](https://github.com/thesumeetsingh/face-lock-alert/assets/148633096/183b037f-109d-44fc-af35-812d8c9294b5)
+
+ALERT SMS
+![image](https://github.com/thesumeetsingh/face-lock-alert/assets/148633096/4a6737fc-8733-4b69-a03b-8a45491a3698)
+
