@@ -74,8 +74,8 @@ The dashboard provides account information, authentication statistics, recent ac
 <td width="40%" align="center"><strong>Threat Alert SMS</strong></td>
 </tr>
 <tr>
-<td width="60%" valign="top"><img src="screenshots/threat-alert-email.png" alt="Threat Alert Email" width="100%"></td>
-<td width="40%" valign="top"><img src="screenshots/threat-alert-sms.png" alt="Threat Alert SMS" width="100%"></td>
+<td width="80%" valign="top"><img src="screenshots/threat-alert-email.png" alt="Threat Alert Email" width="100%"></td>
+<td width="20%" valign="top"><img src="screenshots/threat-alert-sms.png" alt="Threat Alert SMS" width="100%"></td>
 </tr>
 </table>
 
