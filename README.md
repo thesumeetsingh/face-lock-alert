@@ -1,28 +1,83 @@
 # Face Lock Alert System
 
-A full-stack biometric authentication system built with **React, Flask, MySQL and OpenCV LBPH**. It combines password authentication with face verification and records account security activity.
+A biometric authentication web application that combines password-based login with facial verification to detect unauthorized access attempts and notify the registered user.
 
 ## Features
 
-- User registration with name, username, email, phone and password.
-- Automatic multi-image face registration with configurable capture count.
-- Face samples and trained LBPH model stored in MySQL.
-- Single-step login: username/password submission automatically captures a live face image.
-- Password and face verification before dashboard access.
-- Browser geolocation captured during login when permission is granted.
-- Failed face/password attempts stored with time, location, reason and captured image.
-- Email alert with suspicious-login image attachment.
-- Optional Twilio SMS alert.
-- Dashboard with account information, login statistics and recent authentication activity.
-- Minimal black/grey/white React interface.
+- User registration with name, username, email, phone number, and password.
+- Automatic capture of 15 facial samples during registration.
+- OpenCV LBPH-based facial recognition for login verification.
+- MySQL persistence for user data, face samples, trained face models, and authentication logs.
+- Automatic face capture during login after the user submits credentials.
+- Geolocation capture for authentication attempts when browser permission is granted.
+- Email and SMS alerts for unsuccessful authentication attempts.
+- Dashboard with login statistics, account details, authentication history, timestamps, locations, confidence scores, and captured threat images.
+- Password hashing using Werkzeug security utilities.
+- React + Vite frontend with Flask REST API backend.
 
 ## Technology Stack
 
-- **Frontend:** React, Vite, JavaScript, CSS
-- **Backend:** Python, Flask, Flask-CORS
-- **Database:** MySQL
-- **Biometrics:** OpenCV LBPH + Haar Cascade face detection
-- **Alerts:** Gmail SMTP and Twilio
+**Frontend:** React, Vite, JavaScript, HTML/CSS
+
+**Backend:** Python, Flask, Flask-CORS, OpenCV, LBPH Face Recognizer, Werkzeug, Python Dotenv
+
+**Database:** MySQL, MySQL Connector/Python
+
+**Notifications:** SMTP email, Twilio SMS
+
+## Application Workflow
+
+### Registration
+
+1. User submits account information.
+2. Backend creates the user record in MySQL with a hashed password.
+3. Browser automatically captures 15 facial samples.
+4. Face samples are processed and stored in MySQL.
+5. An LBPH model is trained for the registered user.
+6. Registration is completed and the user can log in.
+
+### Login
+
+1. User enters username and password.
+2. Clicking **Login** automatically captures a face image.
+3. Browser location is requested when available.
+4. Backend validates the username and password.
+5. The captured face is compared with the user's registered LBPH model.
+6. A successful match creates a successful login record and opens the dashboard.
+7. A failed password or face verification creates an unsuccessful login record and triggers email/SMS security alerts with available time and location details.
+
+## API Endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/health` | Backend health check |
+| GET | `/api/config` | Returns face capture configuration |
+| POST | `/api/auth/register` | Creates a user account |
+| POST | `/api/auth/register-face` | Stores face samples and trains the user model |
+| POST | `/api/auth/login` | Authenticates password and face together |
+| GET | `/api/me` | Returns the authenticated user |
+| GET | `/api/dashboard` | Returns login statistics and recent attempts |
+| GET | `/api/dashboard/attempts/<id>/image` | Returns a captured unsuccessful-login image |
+| POST | `/api/auth/logout` | Ends the authenticated session |
+
+## Dashboard
+
+![Security Dashboard](screenshots/dashboard.png)
+
+The dashboard provides account information, authentication statistics, recent activity, timestamps, geolocation data, face confidence scores, and captured images from unsuccessful attempts.
+
+## Security Alerts
+
+<table>
+<tr>
+<td width="60%" align="center"><strong>Threat Alert Email</strong></td>
+<td width="40%" align="center"><strong>Threat Alert SMS</strong></td>
+</tr>
+<tr>
+<td width="60%" valign="top"><img src="screenshots/threat-alert-email.png" alt="Threat Alert Email" width="100%"></td>
+<td width="40%" valign="top"><img src="screenshots/threat-alert-sms.png" alt="Threat Alert SMS" width="100%"></td>
+</tr>
+</table>
 
 ## Project Structure
 
@@ -36,141 +91,58 @@ face-lock-alert-system/
 │   ├── requirements.txt
 │   └── .env.example
 ├── frontend/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── styles.css
 │   ├── package.json
 │   ├── vite.config.js
-│   ├── index.html
-│   └── src/
-│       ├── App.jsx
-│       ├── main.jsx
-│       └── styles.css
-└── .gitignore
+│   └── index.html
+├── screenshots/
+│   ├── dashboard.png
+│   ├── threat-alert-email.png
+│   └── threat-alert-sms.png
+└── README.md
 ```
 
-## Database Setup
+## Configuration
 
-Install MySQL Server and MySQL Workbench, then open a SQL tab in Workbench and run:
+Create `backend/.env` from `backend/.env.example` and configure the MySQL credentials, Flask secret, email sender credentials, and Twilio credentials.
 
-```sql
-CREATE DATABASE IF NOT EXISTS face_lock_alert;
-```
+Gmail SMTP requires a Google App Password rather than the normal Gmail account password.
 
-The Flask backend creates the required tables automatically when it starts.
+Never commit `backend/.env` or expose its credentials publicly.
 
-Configure the MySQL connection in `backend/.env`:
+## Local Setup
 
-```text
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=your-mysql-password
-DB_NAME=face_lock_alert
-```
+### Backend
 
-## Backend Setup
-
-Use a normal Python installation; a Python virtual environment is not required.
-
-```powershell
+```bash
 cd backend
-python -m pip install -r requirements.txt
-Copy-Item .env.example .env
+pip install -r requirements.txt
 python app.py
 ```
 
-Backend API:
+The Flask API runs on port `5000`.
 
-```text
-http://127.0.0.1:5000
-```
+### Frontend
 
-## Frontend Setup
-
-```powershell
+```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Frontend:
+The Vite development server runs on port `5173`.
 
-```text
-http://localhost:5173
-```
+## Deployment
 
-Allow camera access when requested. Location permission is optional and is used for security-attempt records and alerts.
+The React frontend can be deployed as a free static site and the Flask backend as a free web service on platforms such as Render. The application requires a publicly accessible MySQL database; Aiven provides a free MySQL tier suitable for small projects and demonstrations.
 
-## Environment Configuration
+For production deployment, configure backend environment variables on the hosting platform rather than committing credentials to the repository.
 
-Create the actual file **`backend/.env`** by copying `.env.example`. Put all real credentials in `.env`.
+Free hosting services can have sleep, resource, and usage limitations. SMS delivery through Twilio is a separate third-party service and may require paid usage or available trial credits.
 
-For Gmail alerts:
+## License
 
-```text
-ALERT_EMAIL=your-sender@gmail.com
-ALERT_EMAIL_PASSWORD=your-gmail-app-password
-```
-
-`ALERT_EMAIL_PASSWORD` must be a **Gmail App Password** generated for the sender account. Do not use the normal Gmail account password.
-
-For Twilio SMS:
-
-```text
-TWILIO_ACCOUNT_SID=...
-TWILIO_AUTH_TOKEN=...
-TWILIO_PHONE_NUMBER=...
-```
-
-The `.env.example` file contains placeholders only. Never commit the real `.env` file.
-
-## API Overview
-
-| Method | Endpoint | Purpose |
-|---|---|---|
-| GET | `/api/health` | Backend health check |
-| GET | `/api/config` | Face capture configuration |
-| POST | `/api/auth/register` | Create account |
-| POST | `/api/auth/register-face` | Store face samples and train model |
-| POST | `/api/auth/login` | Password + automatic face verification |
-| GET | `/api/me` | Current authenticated user |
-| GET | `/api/dashboard` | Login statistics and recent attempts |
-| GET | `/api/dashboard/attempts/<id>/image` | Retrieve a stored failed-login image |
-| POST | `/api/auth/logout` | End authenticated session |
-
-## Authentication Workflow
-
-```text
-Registration
-    ↓
-Account details → Automatic face capture → Face detection → LBPH model → MySQL
-
-Login
-    ↓
-Username + password → Automatic camera capture → Optional location →
-Password verification → LBPH face verification
-    ↓
- ┌───────────────┬───────────────────┐
- │ Match         │ Verification fail │
- ↓               ↓
-Dashboard        Store attempt + image
-                 ↓
-                 Email / SMS alert
-```
-
-## Configuration
-
-`backend/.env` controls the face capture and matching settings:
-
-```text
-FACE_CAPTURE_COUNT=15
-FACE_CONFIDENCE_THRESHOLD=70
-```
-
-At least 10 usable face samples are required for model training. LBPH confidence is lower for a closer match.
-
-## Notes
-
-- Camera and geolocation permissions are controlled by the browser.
-- `localhost` is suitable for camera/geolocation during local development.
-- MySQL stores registration data, face samples, the trained model and login-attempt records.
-- Failed-login images are stored in MySQL as binary data.
-- This is a project implementation and does not include production-grade liveness detection or anti-spoofing.
+This project is available for educational and portfolio use.
