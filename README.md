@@ -1,62 +1,176 @@
-# face-lock-alert
-Face-Lock-Alert is a python based machine learning project to provide robust user authentication and has breach detection ability by combining facial recognition algorithm and secure authentication protocol.
+# Face Lock Alert System
 
+A full-stack biometric authentication system built with **React, Flask, MySQL and OpenCV LBPH**. It combines password authentication with face verification and records account security activity.
 
-Author - Sumeet Singh
+## Features
 
+- User registration with name, username, email, phone and password.
+- Automatic multi-image face registration with configurable capture count.
+- Face samples and trained LBPH model stored in MySQL.
+- Single-step login: username/password submission automatically captures a live face image.
+- Password and face verification before dashboard access.
+- Browser geolocation captured during login when permission is granted.
+- Failed face/password attempts stored with time, location, reason and captured image.
+- Email alert with suspicious-login image attachment.
+- Optional Twilio SMS alert.
+- Dashboard with account information, login statistics and recent authentication activity.
+- Minimal black/grey/white React interface.
 
-Face-Lock-Alert
-Face-Lock-Alert is an advanced Python-based security application that utilizes machine learning techniques for facial recognition to ensure robust user authentication and breach detection capabilities. The project integrates various libraries including Twilio, datetime, os, geocoder, smtplib, OpenCV (cv2), getpass, NumPy, and subprocess for seamless functionality.
+## Technology Stack
 
+- **Frontend:** React, Vite, JavaScript, CSS
+- **Backend:** Python, Flask, Flask-CORS
+- **Database:** MySQL
+- **Biometrics:** OpenCV LBPH + Haar Cascade face detection
+- **Alerts:** Gmail SMTP and Twilio
 
-Features
-User Signup: Register users by capturing basic details and facial images for authentication.
-Facial Recognition Login: Authenticate users during login using a trained machine learning model to compare captured faces with stored facial features.
-Breach Detection: Detect unauthorized access attempts and promptly notify administrators via email and SMS using machine learning-based facial recognition.
-Alert Mechanisms: Utilize Twilio for SMS notifications, SMTP for email alerts, and OpenCV for facial recognition to identify and alert administrators of security breaches, attaching images of unauthorized persons for further action.
-Security Measures: Implement robust security practices including password hashing, data encryption, and secure transmission protocols.
+## Project Structure
 
-Clone the repository:
-git clone https://github.com/thesumeetsingh/face-lock-alert.git
+```text
+face-lock-alert-system/
+├── backend/
+│   ├── app.py
+│   ├── alerts.py
+│   ├── db.py
+│   ├── face_service.py
+│   ├── requirements.txt
+│   └── .env.example
+├── frontend/
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── index.html
+│   └── src/
+│       ├── App.jsx
+│       ├── main.jsx
+│       └── styles.css
+└── .gitignore
+```
 
-Usage
-Run the main Python script to start the application:
-python home.py
+## Database Setup
 
-Project Structure
-The project directory structure is as follows:
+Install MySQL Server and MySQL Workbench, then open a SQL tab in Workbench and run:
 
-alert_sms.py: Module for generating SMS alerts.
-alert_email.py: Module for sending email alerts.
-device_location.py: Module to fetch the current location of the device.
-facelockalertdata.py: Contains email addresses and passwords.
-home.py: Main module for displaying login, signup, and exit options and navigating between them.
-signup.py: Module for user signup and capturing images for model training.
-login.py: Module for user login, breach detection, and alerting via email, SMS, and images.
-image_attachment.py: Module for attaching captured threat images to email notifications.
-twiliokeys.py: Configuration file for Twilio attributes.
-Additional folders: images, passwords, temp, threat_images, trained_models, users.
+```sql
+CREATE DATABASE IF NOT EXISTS face_lock_alert;
+```
 
+The Flask backend creates the required tables automatically when it starts.
 
-Acknowledgements
-This project utilizes the power of machine learning through the following open-source libraries:
-Twilio - For SMS notifications.
-OpenCV - For facial recognition.
-NumPy - For numerical computation
+Configure the MySQL connection in `backend/.env`:
 
-DATA FLOW STRUCTURE:
-![image](https://github.com/thesumeetsingh/face-lock-alert/assets/148633096/ff0f0b3e-7ae7-4bb6-8ee2-b49b720875d0)
+```text
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your-mysql-password
+DB_NAME=face_lock_alert
+```
 
+## Backend Setup
 
-SIGNUP
-![image](https://github.com/thesumeetsingh/face-lock-alert/assets/148633096/3dc3d5d1-9954-4132-92bc-c08cd283f4fa)
+Use a normal Python installation; a Python virtual environment is not required.
 
-BREACH DETECTION ON LOGIN
-![image](https://github.com/thesumeetsingh/face-lock-alert/assets/148633096/957a62b1-391f-40f1-8e9a-33c9b77e3198)
+```powershell
+cd backend
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+python app.py
+```
 
-RECIEVED EMAIL OF THREAT PERSON
-![image](https://github.com/thesumeetsingh/face-lock-alert/assets/148633096/183b037f-109d-44fc-af35-812d8c9294b5)
+Backend API:
 
-ALERT SMS
-![image](https://github.com/thesumeetsingh/face-lock-alert/assets/148633096/4a6737fc-8733-4b69-a03b-8a45491a3698)
+```text
+http://127.0.0.1:5000
+```
 
+## Frontend Setup
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend:
+
+```text
+http://localhost:5173
+```
+
+Allow camera access when requested. Location permission is optional and is used for security-attempt records and alerts.
+
+## Environment Configuration
+
+Create the actual file **`backend/.env`** by copying `.env.example`. Put all real credentials in `.env`.
+
+For Gmail alerts:
+
+```text
+ALERT_EMAIL=your-sender@gmail.com
+ALERT_EMAIL_PASSWORD=your-gmail-app-password
+```
+
+`ALERT_EMAIL_PASSWORD` must be a **Gmail App Password** generated for the sender account. Do not use the normal Gmail account password.
+
+For Twilio SMS:
+
+```text
+TWILIO_ACCOUNT_SID=...
+TWILIO_AUTH_TOKEN=...
+TWILIO_PHONE_NUMBER=...
+```
+
+The `.env.example` file contains placeholders only. Never commit the real `.env` file.
+
+## API Overview
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/health` | Backend health check |
+| GET | `/api/config` | Face capture configuration |
+| POST | `/api/auth/register` | Create account |
+| POST | `/api/auth/register-face` | Store face samples and train model |
+| POST | `/api/auth/login` | Password + automatic face verification |
+| GET | `/api/me` | Current authenticated user |
+| GET | `/api/dashboard` | Login statistics and recent attempts |
+| GET | `/api/dashboard/attempts/<id>/image` | Retrieve a stored failed-login image |
+| POST | `/api/auth/logout` | End authenticated session |
+
+## Authentication Workflow
+
+```text
+Registration
+    ↓
+Account details → Automatic face capture → Face detection → LBPH model → MySQL
+
+Login
+    ↓
+Username + password → Automatic camera capture → Optional location →
+Password verification → LBPH face verification
+    ↓
+ ┌───────────────┬───────────────────┐
+ │ Match         │ Verification fail │
+ ↓               ↓
+Dashboard        Store attempt + image
+                 ↓
+                 Email / SMS alert
+```
+
+## Configuration
+
+`backend/.env` controls the face capture and matching settings:
+
+```text
+FACE_CAPTURE_COUNT=15
+FACE_CONFIDENCE_THRESHOLD=70
+```
+
+At least 10 usable face samples are required for model training. LBPH confidence is lower for a closer match.
+
+## Notes
+
+- Camera and geolocation permissions are controlled by the browser.
+- `localhost` is suitable for camera/geolocation during local development.
+- MySQL stores registration data, face samples, the trained model and login-attempt records.
+- Failed-login images are stored in MySQL as binary data.
+- This is a project implementation and does not include production-grade liveness detection or anti-spoofing.
